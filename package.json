@@ -30,11 +30,9 @@
     "eslint": "^2.9.0",
     "eslint-config-strongloop": "^2.0.1",
     "istanbul": "0.4.0",
-    "istanbul-cobertura-badger": "1.2.1",
     "mocha": "^2.4.5",
     "nock": "^8.0.0",
-    "rewire": "2.5.1",
-    "shelljs": "^0.7.0"
+    "coveralls": "^2.11.12"
   },
   "engines": {
     "node": ">= 4.2.0"
