@@ -1,0 +1,55 @@
+{
+  "name": "hubot-ibmcloud-objectstore-crawler",
+  "version": "0.0.1",
+  "description": "hubot-ibmcloud-objectstore-crawler",
+  "main": "index.js",
+  "repository": {
+    "url": "https://github.com/ibm-cloud-solutions/hubot-ibmcloud-objectstore-crawler",
+    "type": "git"
+  },
+  "scripts": {
+    "start": "source config/env && node runner.js",
+    "lint": "eslint src/**/*.js test/*.js index.js",
+    "test": ". test/.env && mocha test",
+    "coverage": ". test/.env && istanbul cover -x '**/coverage/**' -x '**/tools/**' --report lcov --report cobertura --report text --dir ./gh-pages/coverage _mocha -- test",
+    "coverage-local": ". test/.env && istanbul cover -x '**/tools/**' --report lcov --report cobertura --report text --dir ./gh-pages/coverage _mocha -- test",
+    "release": "node tools/publish"
+  },
+  "keywords": [
+    "watson",
+    "ibm",
+    "object storage",
+    "cloud",
+    "ibm cloud"
+  ],
+  "author": "ibm-cloud-solutions",
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "eslint": "^2.9.0",
+    "eslint-config-strongloop": "^2.0.1",
+    "istanbul": "0.4.0",
+    "istanbul-cobertura-badger": "1.2.1",
+    "mocha": "^2.4.5",
+    "nock": "^8.0.0",
+    "rewire": "2.5.1",
+    "shelljs": "^0.7.0"
+  },
+  "engines": {
+    "node": ">= 4.2.0"
+  },
+  "files": [
+    "src",
+    "index.js"
+  ],
+  "dependencies": {
+    "csv-stringify": "^1.0.4",
+    "winston": "^2.2.0",
+    "i18n-2": "^0.6.3",
+    "lodash": "^4.13.1",
+    "request": "^2.73.0",
+    "watson-developer-cloud": ">=2.1.4",
+    "async": "^2.0.1",
+    "hubot-ibmcloud-cognitive-lib": "latest"
+  }
+}

@@ -1,0 +1,20 @@
+{
+	"missing.required.envs": "Required environment variable is missing.  Please set %s as described in the README.",
+	"no.configured.tag.generators": "Unable to initialize Objectstorage Search Engine, because no configured tag generators.",
+	"unable.to.load.generators": "Error while loading tag generators.",
+	"nlc.training.started": "NLC training for objectstorage started successfully.",
+	"nlc.training.not.started": "NLC training for objectstorage has not started.",
+	"classifier.already.training": "NLC used for objectstorage is already training.  Please allow training to complete.",
+	"missing.search.string": "Unable to perform search, because no search string was provided.",
+	"unable.to.classify": "Unable to classify provided search string.  Please ensure training has completed.",
+	"unexpected.classify.error": "Error occurred while performing search.  See logs for more details.",
+	"engine.is.busy": "Unable to perform the requested action, because the search engine is currently busy.",
+	"no.index.while.scanning": "Unable to start indexing while scan is running.",
+	"no.index.while.indexing": "Unable to start indexing while another index operation is running.",
+	"no.scan.while.scanning": "Unable to start scan while another scan is running.",
+	"no.scan.while.indexing": "Unable to start scan while search engine is indexing.",
+	"scan.completed.changes.yes": "Object Storage scan complete.  Changes since last indexing: %s added, %s removed.  Please run index command to process the changes.",
+	"scan.completed.changes.no": "Object Storage scan complete.  There have been no changes since last indexing.  Wait a while and rescan for new changes.",
+	"scan.before.index": "Unable to index because no scan has been performed.  Please run scan before attempting to index.",
+	"no.changes.to.index": "There are no changes to index.  Wait a while, rescan and index if there are new changes."
+}

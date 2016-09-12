@@ -1,0 +1,17 @@
+[
+  {
+    "count": 3,
+    "bytes": 65270,
+    "name": "container1"
+  },
+  {
+    "count": 3,
+    "bytes": 36581,
+    "name": "container2"
+  },
+  {
+    "count": 0,
+    "bytes": 0,
+    "name": "container3"
+  }
+]

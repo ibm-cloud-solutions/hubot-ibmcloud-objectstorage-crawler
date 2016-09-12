@@ -1,0 +1,13 @@
+{
+  "Accept-Ranges": "bytes",
+  "Connection": "keep-alive",
+  "Content-Length": 591,
+  "Content-Type": "text/plain;charset=UTF-8",
+  "Date": "Wed, 07 Sep 2016 13:15:40 GMT",
+  "Etag": "3e8c9c501c1eda71513ac46892601da8",
+  "Last-Modified": "Wed, 31 Aug 2016 20:52:26 GMT",
+  "X-Object-Meta-Crawlernote1": "this is some meta data 1",
+  "X-Object-Meta-Crawlernote2": "crawler note 2",
+  "X-Timestamp": "1472676745.99607",
+  "X-Trans-Id": "tx556425e96c9847b1ae0f6-0057d012fc"
+}
