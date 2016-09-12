@@ -476,4 +476,100 @@ describe('Test Object Storage Search Engine', function() {
 			});
 		});
 	});
+
+	context('search engine scan and index errors', function() {
+
+		it('should fail to scan if errors retrieving classifier list', function(done) {
+			let engine = new SearchEngine();
+
+			engine.nlcManager = {
+				classifierList: function() {
+					return Promise.reject('unable to get list of classifiers');
+				}
+			};
+
+			engine.scan().then((scanResult) => {
+				done('ERROR: scan should not work if error while getting classifiers');
+			}).catch((error) => {
+				if (error) {} // linter
+				expect(engine.runState).to.eq(RUN_STATE_IDLE);
+			}).then(() => {
+				engine.nlcManager.classifierList = function() {
+					throw new Error('exception from test');
+				};
+				return engine.scan();
+			}).then((scanResult) => {
+				done('ERROR: scan should not work if exception while getting classifiers');
+			}).catch((error) => {
+				if (error) {} // linter
+				expect(engine.runState).to.eq(RUN_STATE_IDLE);
+				done();
+			});
+		});
+
+		it('should fail to index if errors retrieving classifier list', function(done) {
+			let engine = new SearchEngine();
+
+			engine.scanResult = {
+				added_objects: ['obj1'],
+				deleted_objects: []
+			};
+
+			engine.nlcManager = {
+				classifierList: function() {
+					return Promise.reject('unable to get list of classifiers');
+				}
+			};
+
+			engine.index().then((indexResult) => {
+				done('ERROR: index should not work if error while getting classifiers');
+			}).catch((error) => {
+				if (error) {} // linter
+				expect(engine.runState).to.eq(RUN_STATE_IDLE);
+			}).then(() => {
+				engine.nlcManager.classifierList = function() {
+					throw new Error('exception from test');
+				};
+				return engine.index();
+			}).then((indexResult) => {
+				done('ERROR: index should not work if exception while getting classifiers');
+			}).catch((error) => {
+				if (error) {} // linter
+				expect(engine.runState).to.eq(RUN_STATE_IDLE);
+				done();
+			});
+		});
+
+		it('should fail to index if NLC is already training', function(done) {
+			let engine = new SearchEngine();
+
+			engine.scanResult = {
+				added_objects: ['obj1'],
+				deleted_objects: []
+			};
+
+			engine.nlcManager = {
+				classifierList: function() {
+					return Promise.resolve([{
+						classifier_id: 'test-classifier-id-training',
+						name: 'test-classifier-training',
+						language: 'en',
+						created: '2016-09-02T18:30:02.148Z',
+						url: settings.nlc_url + '/v1/classifiers/test-classifier-id-newer',
+						status: 'Training',
+						status_description: 'The classifier instance is now available and is ready to take classifier requests.'
+					}]);
+				}
+			};
+
+			engine.index().then((indexResult) => {
+				expect(engine.runState).to.eq(RUN_STATE_IDLE);
+				expect(indexResult.training_started).to.be.false;
+				expect(indexResult.description).to.eq(i18n.__('classifier.already.training'));
+				done();
+			}).catch((error) => {
+				done(error);
+			});
+		});
+	});
 });
