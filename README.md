@@ -1,5 +1,7 @@
-[![Build Status](https://travis.innovate.ibm.com/BluemixSolutions/hubot-ibmcloud-objectstorage-crawler.svg?token=Gn7Cdz9YEJSDvAVxXAUD&branch=master)](https://travis.innovate.ibm.com/BluemixSolutions/hubot-ibmcloud-objectstorage-crawler)
-[![Coverage Status](https://pages.github.ibm.com/BluemixSolutions/hubot-ibmcloud-objectstorage-crawler/coverage/badge.svg)](https://pages.github.ibm.com/BluemixSolutions/hubot-ibmcloud-objectstorage-crawler/coverage/lcov-report/index.html)
+[![Build Status](https://travis-ci.org/ibm-cloud-solutions/hubot-ibmcloud-objectstorage-crawler.svg?branch=master)](https://travis-ci.org/ibm-cloud-solutions/hubot-ibmcloud-objectstorage-crawler)
+[![Coverage Status](https://coveralls.io/repos/github/ibm-cloud-solutions/hubot-ibmcloud-objectstorage-crawler/badge.svg?branch=master)](https://coveralls.io/github/ibm-cloud-solutions/hubot-ibmcloud-objectstorage-crawler?branch=master)
+[![Dependency Status](https://dependencyci.com/github/ibm-cloud-solutions/hubot-ibmcloud-objectstorage-crawler/badge)](https://dependencyci.com/github/ibm-cloud-solutions/hubot-ibmcloud-objectstorage-crawler)
+[![npm](https://img.shields.io/npm/v/hubot-ibmcloud-objectstorage-crawler.svg?maxAge=2592000)](https://www.npmjs.com/package/hubot-ibmcloud-objectstorage-crawler)
 
 # hubot-ibmcloud-objectstorage-crawler
 
@@ -61,8 +63,8 @@ export HUBOT_OBJECT_STORAGE_CLASSIFIER_CLEANUP_INTERVAL=<cleanupInterval>
 ## Hubot Adapter Setup
 
 Hubot supports a variety of adapters to connect to popular chat clients.  For more feature rich experiences you can setup the following adapters:
-- [Slack setup](https://github.com/ibm-cloud-solutions/hubot-ibmcloud-objectstorage/blob/master/docs/adapters/slack.md)
-- [Facebook Messenger setup](https://github.com/ibm-cloud-solutions/hubot-ibmcloud-objectstorage/blob/master/docs/adapters/facebook.md)
+- [Slack setup](https://github.com/ibm-cloud-solutions/hubot-ibmcloud-objectstorage-crawler/blob/master/docs/adapters/slack.md)
+- [Facebook Messenger setup](https://github.com/ibm-cloud-solutions/hubot-ibmcloud-objectstorage-crawler/blob/master/docs/adapters/facebook.md)
 
 ## Cognitive Setup
 
@@ -70,7 +72,7 @@ This project supports natural language interactions using Watson and other Bluem
 
 ## Development
 
-Please refer to the [CONTRIBUTING.md](https://github.com/ibm-cloud-solutions/hubot-ibmcloud-objectstorage/blob/master/CONTRIBUTING.md) before starting any work.  Steps for running this script for development purposes:
+Please refer to the [CONTRIBUTING.md](https://github.com/ibm-cloud-solutions/hubot-ibmcloud-objectstorage-crawler/blob/master/CONTRIBUTING.md) before starting any work.  Steps for running this script for development purposes:
 
 ### Configuration Setup
 
@@ -98,13 +100,13 @@ Hubot supports a variety of adapters to connect to popular chat clients.
 
 If you just want to use:
  - Terminal: run `npm run start`
- - [Slack: link to setup instructions](https://github.com/ibm-cloud-solutions/hubot-ibmcloud-objectstorage/blob/master/docs/adapters/slack.md)
- - [Facebook Messenger: link to setup instructions](https://github.com/ibm-cloud-solutions/hubot-ibmcloud-objectstorage/blob/master/docs/adapters/facebook.md)
+ - [Slack: link to setup instructions](https://github.com/ibm-cloud-solutions/hubot-ibmcloud-objectstorage-crawler/blob/master/docs/adapters/slack.md)
+ - [Facebook Messenger: link to setup instructions](https://github.com/ibm-cloud-solutions/hubot-ibmcloud-objectstorage-crawler/blob/master/docs/adapters/facebook.md)
 
 ## License
 
-See [LICENSE.txt](https://github.com/ibm-cloud-solutions/hubot-ibmcloud-objectstorage/blob/master/LICENSE.txt) for license information.
+See [LICENSE.txt](https://github.com/ibm-cloud-solutions/hubot-ibmcloud-objectstorage-crawler/blob/master/LICENSE.txt) for license information.
 
 ## Contribute
 
-Please check out our [Contribution Guidelines](https://github.com/ibm-cloud-solutions/hubot-ibmcloud-objectstorage/blob/master/CONTRIBUTING.md) for detailed information on how you can lend a hand.
+Please check out our [Contribution Guidelines](https://github.com/ibm-cloud-solutions/hubot-ibmcloud-objectstorage-crawler/blob/master/CONTRIBUTING.md) for detailed information on how you can lend a hand.

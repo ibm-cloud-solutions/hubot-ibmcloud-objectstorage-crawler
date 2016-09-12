@@ -11,16 +11,17 @@
     "start": "source config/env && node runner.js",
     "lint": "eslint src/**/*.js test/*.js index.js",
     "test": ". test/.env && mocha test",
-    "coverage": ". test/.env && istanbul cover -x '**/coverage/**' -x '**/tools/**' --report lcov --report cobertura --report text --dir ./gh-pages/coverage _mocha -- test",
-    "coverage-local": ". test/.env && istanbul cover -x '**/tools/**' --report lcov --report cobertura --report text --dir ./gh-pages/coverage _mocha -- test",
-    "release": "node tools/publish"
+    "coverage": ". test/.env && istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly -- -R spec && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage",
+    "coverage-local": ". test/.env && istanbul cover -x '**/tools/**' --report lcov --report cobertura --report text --dir ./gh-pages/coverage _mocha -- test"
   },
   "keywords": [
     "watson",
     "ibm",
     "object storage",
     "cloud",
-    "ibm cloud"
+    "ibm cloud",
+    "slack",
+    "crawler"
   ],
   "author": "ibm-cloud-solutions",
   "license": "Apache-2.0",
