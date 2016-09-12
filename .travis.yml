@@ -1,0 +1,11 @@
+language: node_js
+node_js:
+  - '4.2'
+install:
+  - 'npm install'
+script:
+  - 'npm run lint'
+  - 'npm run coverage'
+notifications:
+  slack: 'ibm-cloudplatform.slack.com:${SLACK_TOKEN}'
+  webhooks: http://cloud-solutions-travis.mybluemix.net/notifications
