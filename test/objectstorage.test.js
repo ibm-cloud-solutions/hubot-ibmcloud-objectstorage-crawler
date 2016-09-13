@@ -7,7 +7,7 @@
 'use strict';
 
 const expect = require('chai').expect;
-const Objectstore = require('../src/lib/objectstore');
+const Objectstore = require('../src/lib/objectstorage');
 const settings = require('../src/lib/env');
 
 const i18n = new (require('i18n-2'))({

@@ -36,7 +36,7 @@ function setClearTokenInterval(objectstorage) {
 	}, 1000 * 60 * 5); // invalidate token every 5 minutes
 }
 
-function ObjectStore() {
+function ObjectStorage() {
 	this.initSuccess = false;
 
 	this.missingEnv;
@@ -71,15 +71,15 @@ function ObjectStore() {
 	return this;
 }
 
-ObjectStore.prototype.initializedSuccessfully = function() {
+ObjectStorage.prototype.initializedSuccessfully = function() {
 	return this.initSuccess;
 };
 
-ObjectStore.prototype.getMissingEnv = function() {
+ObjectStorage.prototype.getMissingEnv = function() {
 	return this.missingEnv;
 };
 
-ObjectStore.prototype.checkAuth = function() {
+ObjectStorage.prototype.checkAuth = function() {
 	let os = this;
 	if (!os.initializedSuccessfully()) {
 		return Promise.reject(i18n.__('missing.required.envs', this.missingEnv));
@@ -162,7 +162,7 @@ ObjectStore.prototype.checkAuth = function() {
 	}
 };
 
-ObjectStore.prototype.getContainers = function() {
+ObjectStorage.prototype.getContainers = function() {
 	let os = this;
 	if (!os.initializedSuccessfully()) {
 		return Promise.reject(i18n.__('missing.required.envs', this.missingEnv));
@@ -207,7 +207,7 @@ ObjectStore.prototype.getContainers = function() {
 	});
 };
 
-ObjectStore.prototype.getContainerDetails = function(containerName) {
+ObjectStorage.prototype.getContainerDetails = function(containerName) {
 	let os = this;
 	if (!os.initializedSuccessfully()) {
 		return Promise.reject(i18n.__('missing.required.envs', this.missingEnv));
@@ -259,7 +259,7 @@ ObjectStore.prototype.getContainerDetails = function(containerName) {
 	});
 };
 
-ObjectStore.prototype.buildObjectRequest = function(containerName, objectName) {
+ObjectStorage.prototype.buildObjectRequest = function(containerName, objectName) {
 	let os = this;
 	if (!os.initializedSuccessfully()) {
 		return Promise.reject(i18n.__('missing.required.envs', this.missingEnv));
@@ -292,7 +292,7 @@ ObjectStore.prototype.buildObjectRequest = function(containerName, objectName) {
 	});
 };
 
-ObjectStore.prototype.getObject = function(containerName, objectName) {
+ObjectStorage.prototype.getObject = function(containerName, objectName) {
 	let os = this;
 	if (!os.initializedSuccessfully()) {
 		return Promise.reject(i18n.__('missing.required.envs', this.missingEnv));
@@ -334,7 +334,7 @@ ObjectStore.prototype.getObject = function(containerName, objectName) {
 };
 
 // Returns all metadata for this object.  Both custom and system metadata, such as Content-Type.
-ObjectStore.prototype.getObjectMetadata = function(containerName, objectName) {
+ObjectStorage.prototype.getObjectMetadata = function(containerName, objectName) {
 	let os = this;
 	if (!os.initializedSuccessfully()) {
 		return Promise.reject(i18n.__('missing.required.envs', this.missingEnv));
@@ -368,4 +368,4 @@ ObjectStore.prototype.getObjectMetadata = function(containerName, objectName) {
 	});
 };
 
-exports = module.exports = ObjectStore;
+exports = module.exports = ObjectStorage;
