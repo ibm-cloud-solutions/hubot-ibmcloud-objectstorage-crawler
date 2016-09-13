@@ -22,40 +22,31 @@ Steps for adding this to your existing hubot:
 2. Run `cd hubot-ibmcloud-objectstorage-crawler`
 3. Run `npm install`
 4. Add the necessary environment variables for Object Storage, Watson Natural Language Classifier, Watson Visual Recognition, Watson Document Conversion, and Alchemy Language Services.
-
-    - Object Storage configuration
-    ```
+```
+    # Object Storage configuration
     export HUBOT_OBJECT_STORAGE_AUTH_URL=<URL>
     export HUBOT_OBJECT_STORAGE_USER_ID=<USER_ID>
     export HUBOT_OBJECT_STORAGE_PASSWORD=<PASSWORD>
     export HUBOT_OBJECT_STORAGE_PROJECT_ID=<PROJECT_ID>
     export HUBOT_OBJECT_STORAGE_BLUEMIX_REGION=dallas
-    ```
 
-    - Watson Natural Language Classifier configuration
-    ```
+    # Watson Natural Language Classifier configuration
     export HUBOT_WATSON_NLC_URL=<NLC_URL>
     export HUBOT_WATSON_NLC_USERNAME=<NLC_USERNAME>
     export HUBOT_WATSON_NLC_PASSWORD=<NLC_PASSWORD>
-    ```
 
-    - Watson Visual Recognition configuration
-    ```
+    # Watson Visual Recognition configuration
     export HUBOT_VISUAL_RECOGNITION_API_KEY=<API_KEY>
     export HUBOT_VISUAL_RECOGNITION_VERSION_DATE="2016-05-20"
-    ```
 
-    - Watson Document Conversion configuration
-    ```
+    # Watson Document Conversion configuration
     export HUBOT_DOC_CONVERSION_USERNAME=<USERNAME>
     export HUBOT_DOC_CONVERSION_PASSWORD=<PASSWORD>
     export HUBOT_DOC_CONVERSION_VERSION_DATE=2015-12-15
-    ```
 
-    - Alchemy Language configuration
-    ```
+    # Alchemy Language configuration
     export HUBOT_ALCHEMY_API_KEY=<API_KEY>
-    ```
+```
 
 ## Development
 
