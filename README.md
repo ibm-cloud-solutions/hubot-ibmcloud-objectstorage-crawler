@@ -61,7 +61,12 @@ Please refer to the [CONTRIBUTING.md](https://github.com/ibm-cloud-solutions/hub
 
 ### Running Locally
 - Run `npm run start` start the app that allows you to scan and index object storage
+    - **scan** - scan objectstorage for changes since last training
+    - **index** - index objectstorage using NLC
+    - **search <string>** - run search with the provided search string
+    - **exit** - end this program
 - Run `npm run test` to run automated tests
+- Run `npm run coverage-local` to generate a code coverage report
 
 ## License
 
