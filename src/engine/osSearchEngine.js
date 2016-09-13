@@ -39,6 +39,10 @@ function SearchEngine() {
 	this.runState = RUN_STATE_IDLE;
 	this.tagGenerators = [];
 	this.initError;
+	this.status = {
+		scanStartTimestamp: null,
+		indexStartTimestamp: null
+	};
 
 	let missingEnv;
 
@@ -122,6 +126,67 @@ SearchEngine.prototype.initializedSuccessfully = function() {
 // Get details about initialization error. Returns translated string explaining why initialization failed.
 SearchEngine.prototype.initializationError = function() {
 	return this.initError;
+};
+
+// Promise which will be resolved with useful status information about engine activity, or rejected with an error.
+// Currently supported status info:
+// {
+//    scanStartTimestamp: ... // Date object indicating last time a scan took place (null if we never scanned).
+//    indexStartTimestamp: ... // Last time we started indexing (null if we never indexed).
+// }
+//
+// NOTE: If user restarts our process, these values will be estimates based on last NLC training.
+SearchEngine.prototype.getEngineStatus = function() {
+	let engine = this;
+	logger.debug(`${TAG}: Retrieving engine status`);
+
+	return new Promise((resolve, reject) => {
+		try {
+			if (engine.status.indexStartTimestamp) {
+				// Either we have already computed indexStartTimestamp or user hasn't restarted our process since
+				// last indexing.  Simply return our status.
+				logger.debug(`${TAG}: Index start time already set.  Resolving with status object:`, engine.status);
+				resolve(engine.status);
+			}
+			else {
+				// User has never indexed or process was restarted.  Check by looking for existing NLC instance.
+				engine.nlcManager.classifierList().then((classifiers) => {
+					logger.debug(`${TAG}: Index start time not set.  Using existing classifier to compute index/scan times.`);
+					let sortedClassifiers = classifiers.sort((a, b) => {
+						return new Date(b.created) - new Date(a.created);
+					});
+
+					let mostRecentClassifier;
+
+					for (let i = 0; i < sortedClassifiers.length; ++i) {
+						if (sortedClassifiers[i].status === 'Training' || sortedClassifiers[i].status === 'Available') {
+							mostRecentClassifier = sortedClassifiers[i];
+							break;
+						}
+					}
+
+					if (mostRecentClassifier) {
+						logger.debug(`${TAG}: Found existing classifier to use for computing index/scan start times.`, mostRecentClassifier);
+						engine.status.indexStartTimestamp = new Date(mostRecentClassifier.created);
+
+						if (!engine.status.scanStartTimestamp) {
+							engine.status.scanStartTimestamp = engine.status.indexStartTimestamp;
+						}
+					}
+
+					logger.debug(`${TAG}: Resolving with status object:`, engine.status);
+					resolve(engine.status);
+				}).catch((err) => {
+					logger.error(`${TAG}: Error while retrieving search engine status:`, err);
+					reject(err);
+				});
+			}
+		}
+		catch (error) {
+			logger.error(`${TAG}: Exception while retrieving search engine status:`, error);
+			reject(error);
+		}
+	});
 };
 
 // Provides our training data to the NLC manager dynamically.  Allowing us to provide new training data
@@ -550,12 +615,12 @@ SearchEngine.prototype.scan = function() {
 	}
 
 	engine.runState = RUN_STATE_SCANNING;
+	engine.status.scanStartTimestamp = new Date();
 	engine.scanResult = {
 		added_objects: [], // array of objects with thes attributes {objectPath:..., objectMetadata:...}.  One for each new objectstorage object.
 		deleted_objects: [], // array of strings, which are paths for all objectstorage objects that were removed.
 		unchanged_objects: [], // array of strings, which are paths for all objectstorage objects that were unchanged.
-		mostRecentClassifierData: {}, // training data from most recent classifier that's either training or available.
-		scanTime: new Date() // time this scan started.
+		mostRecentClassifierData: {} // training data from most recent classifier that's either training or available.
 	};
 
 	return new Promise((resolve, reject) => {
@@ -681,6 +746,7 @@ SearchEngine.prototype.index = function() {
 	}
 
 	engine.runState = RUN_STATE_INDEXING;
+	engine.status.indexStartTimestamp = new Date();
 	engine.indexResult = {
 		training_started: false,
 		description: i18n.__('nlc.training.not.started'),
