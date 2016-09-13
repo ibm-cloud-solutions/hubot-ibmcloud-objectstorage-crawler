@@ -13,7 +13,7 @@ const _ = require('lodash');
 const logger = require('../lib/logger');
 const watson = require('watson-developer-cloud');
 const settings = require('../lib/env');
-const Objectstore = require('../lib/objectstore');
+const Objectstore = require('../lib/objectstorage');
 const fs = require('fs');
 
 const i18n = new (require('i18n-2'))({

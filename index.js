@@ -7,4 +7,4 @@
 'use strict';
 
 module.exports.osSearchEngine = require('./src/engine/osSearchEngine');
-module.exports.objectstore = require('./src/lib/objectstore');
+module.exports.objectstore = require('./src/lib/objectstorage');

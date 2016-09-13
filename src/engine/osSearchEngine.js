@@ -14,7 +14,7 @@ const csvArrayToString = require('csv-stringify');
 const NLCManager = require('hubot-ibmcloud-cognitive-lib').nlcManager;
 
 const logger = require('../lib/logger');
-const Objectstore = require('../lib/objectstore');
+const Objectstore = require('../lib/objectstorage');
 let settings = require('../lib/env');  // not const to allow test code to provide settings
 
 // The engine will be in one of these states.  Consumers can only scan and index if the engine is idle.
