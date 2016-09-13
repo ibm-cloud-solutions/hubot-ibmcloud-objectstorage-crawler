@@ -572,4 +572,104 @@ describe('Test Object Storage Search Engine', function() {
 			});
 		});
 	});
+
+	context('tests to validate engine status', function() {
+		it('scan and indexing should set start times in status', function(done) {
+			let engine = new SearchEngine();
+			expect(engine.initializedSuccessfully()).to.be.true;
+
+			let tagGenerators = [];
+			tagGenerators.push(new FakeTagGenerator());
+			engine.tagGenerators = tagGenerators;
+
+			engine.getEngineStatus().then((status) => {
+				expect(status.scanStartTimestamp).to.be.null;
+				expect(status.indexStartTimestamp).to.be.null;
+				return engine.scan();
+			}).then(() => {
+				return engine.getEngineStatus();
+			}).then((status) => {
+				expect(typeof status.scanStartTimestamp).to.equal('object');
+				expect(status.indexStartTimestamp).to.be.null;
+				return engine.index();
+			}).then(() => {
+				return engine.getEngineStatus();
+			}).then((status) => {
+				expect(typeof status.scanStartTimestamp).to.equal('object');
+				expect(typeof status.indexStartTimestamp).to.equal('object');
+				done();
+			}).catch((error) => {
+				done(error);
+			});
+		});
+
+		it('should be able to compute status from previously trained classifier', function(done) {
+			let engine = new SearchEngine();
+			expect(engine.initializedSuccessfully()).to.be.true;
+
+			// mock related NLC manager output to ensure index/scan startTime comes from latest classifier.
+			let mostRecentClassifierCreated = '2016-09-02T18:30:02.148Z';
+
+			engine.nlcManager = {
+				classifierList: function(searchString) {
+					return Promise.resolve([
+						{
+							classifier_id: 'test-classifier-id-older',
+							name: 'test-classifier-older',
+							language: 'en',
+							created: '2015-09-02T18:30:02.148Z',
+							url: settings.nlc_url + '/v1/classifiers/test-classifier-id-older',
+							status: 'Available',
+							status_description: 'The classifier instance is now available and is ready to take classifier requests.'
+						},
+						{
+							classifier_id: 'test-classifier-id-newer',
+							name: 'test-classifier-newer',
+							language: 'en',
+							created: mostRecentClassifierCreated,
+							url: settings.nlc_url + '/v1/classifiers/test-classifier-id-newer',
+							status: 'Available',
+							status_description: 'The classifier instance is now available and is ready to take classifier requests.'
+						}
+					]);
+				}
+			};
+
+			engine.getEngineStatus().then((status) => {
+				expect(typeof status.scanStartTimestamp).to.equal('object');
+				expect(typeof status.indexStartTimestamp).to.equal('object');
+				expect(status.scanStartTimestamp.getTime()).to.equal(Date.parse(mostRecentClassifierCreated));
+				expect(status.indexStartTimestamp.getTime()).to.equal(Date.parse(mostRecentClassifierCreated));
+				done();
+			}).catch((error) => {
+				done(error);
+			});
+		});
+
+		it('should fail to retrieve status if unable to talk to NLC', function(done) {
+			let engine = new SearchEngine();
+
+			engine.nlcManager = {
+				classifierList: function() {
+					return Promise.reject('unable to get list of classifiers');
+				}
+			};
+
+			engine.getEngineStatus().then((status) => {
+				done('ERROR: get status should not work if error while getting classifiers');
+			}).catch((error) => {
+				if (error) {} // we expect this error.
+			}).then((status) => {
+				engine.nlcManager.classifierList = function() {
+					throw new Error('exception from test');
+				};
+				return engine.getEngineStatus();
+			}).then((status) => {
+				done('ERROR: get status should not work if exception while getting classifiers');
+			}).catch((error) => {
+				if (error) {} // we expect this error.
+				done();
+			});
+		});
+	});
 });
