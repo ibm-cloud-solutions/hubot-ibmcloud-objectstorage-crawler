@@ -1,10 +1,10 @@
 {
-  "name": "hubot-ibmcloud-objectstore-crawler",
-  "version": "1.0.0",
-  "description": "hubot-ibmcloud-objectstore-crawler",
+  "name": "hubot-ibmcloud-objectstorage-crawler",
+  "version": "0.0.1",
+  "description": "hubot-ibmcloud-objectstorage-crawler",
   "main": "index.js",
   "repository": {
-    "url": "https://github.com/ibm-cloud-solutions/hubot-ibmcloud-objectstore-crawler",
+    "url": "https://github.com/ibm-cloud-solutions/hubot-ibmcloud-objectstorage-crawler",
     "type": "git"
   },
   "scripts": {
