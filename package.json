@@ -1,6 +1,6 @@
 {
   "name": "hubot-ibmcloud-objectstorage-crawler",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "hubot-ibmcloud-objectstorage-crawler",
   "main": "index.js",
   "repository": {
