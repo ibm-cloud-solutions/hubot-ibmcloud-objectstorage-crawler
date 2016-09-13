@@ -21,7 +21,9 @@
     "cloud",
     "ibm cloud",
     "slack",
-    "crawler"
+    "crawler",
+    "hubot",
+    "hubot-scripts"
   ],
   "author": "ibm-cloud-solutions",
   "license": "Apache-2.0",
