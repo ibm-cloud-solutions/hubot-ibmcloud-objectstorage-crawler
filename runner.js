@@ -22,6 +22,7 @@ function usage() {
 	console.log('\tscan - scan objectstorage for changes since last training.');
 	console.log('\tindex - index objectstorage using NLC.');
 	console.log('\tsearch <string> - run search with the provided search string');
+	console.log('\tstatus - show status of search engine');
 	console.log('\texit - end this program.');
 }
 
@@ -49,6 +50,14 @@ function doSearch(searchString) {
 	});
 }
 
+function doStatus(searchString) {
+	return engine.getEngineStatus().then((result) => {
+		console.log(JSON.stringify(result, null, 2));
+	}).catch((error) => {
+		console.error(JSON.stringify(error, null, 2));
+	});
+}
+
 function runCommand(command, args) {
 	if(command === 'scan') {
 		return doScan()
@@ -56,6 +65,8 @@ function runCommand(command, args) {
 		return doIndex()
 	} else if(command === 'search') {
 			return doSearch(args);
+	} else if(command === 'status') {
+		return doStatus(args);
 	} else if(command === 'exit') {
 		process.exit(0);
 	} else {
