@@ -356,6 +356,18 @@ describe('Test Object Storage Search Engine', function() {
 					});
 				},
 
+				currentClassifier: function() {
+					return Promise.resolve({
+						classifier_id: 'test-classifier-id',
+						name: 'test-classifier',
+						language: 'en',
+						created: '2016-09-02T18:30:02.148Z',
+						url: settings.nlc_url + '/v1/classifiers/test-classifier-id',
+						status: 'Available',
+						status_description: 'The classifier instance is now available and is ready to take classifier requests.'
+					});
+				},
+
 				getClassifierData: function(classifierId) {
 					let classfierData = {};
 					classfierData['/container1/Image1.jpg'] = ['fish', 'boat'];
@@ -370,9 +382,12 @@ describe('Test Object Storage Search Engine', function() {
 		it('should classify text and include training data', function(done) {
 			engine.classify('fishing boat', true).then((classifyResult) => {
 				expect(classifyResult).to.be.a('object');
-				expect(classifyResult.classes).to.have.lengthOf(2);
-				expect(classifyResult.classes[0].training_data).to.have.lengthOf(2);
-				expect(classifyResult.classes[1].training_data).to.have.lengthOf(3);
+				expect(classifyResult.search_successful).to.be.true;
+				expect(classifyResult.description).to.equal(i18n.__('search.completed.successfully'));
+				expect(classifyResult.classify_result).to.be.a('object');
+				expect(classifyResult.classify_result.classes).to.have.lengthOf(2);
+				expect(classifyResult.classify_result.classes[0].training_data).to.have.lengthOf(2);
+				expect(classifyResult.classify_result.classes[1].training_data).to.have.lengthOf(3);
 				done();
 			}).catch((error) => {
 				done(error);
@@ -382,9 +397,31 @@ describe('Test Object Storage Search Engine', function() {
 		it('should classify text but do not include training data', function(done) {
 			engine.classify('fishing boat', false).then((classifyResult) => {
 				expect(classifyResult).to.be.a('object');
-				expect(classifyResult.classes).to.have.lengthOf(2);
-				expect(classifyResult.classes[0].training_data).to.be.undefined;
-				expect(classifyResult.classes[1].training_data).to.be.undefined;
+				expect(classifyResult.search_successful).to.be.true;
+				expect(classifyResult.description).to.equal(i18n.__('search.completed.successfully'));
+				expect(classifyResult.classify_result).to.be.a('object');
+				expect(classifyResult.classify_result.classes).to.have.lengthOf(2);
+				expect(classifyResult.classify_result.classes[0].training_data).to.be.undefined;
+				expect(classifyResult.classify_result.classes[1].training_data).to.be.undefined;
+				done();
+			}).catch((error) => {
+				done(error);
+			});
+		});
+
+		it('should classify even if error retreiving training data', function(done) {
+			engine.nlcManager.getClassifierData = function() {
+				return Promise.reject('test forced error when getting classifier data');
+			};
+
+			engine.classify('fishing boat', true).then((classifyResult) => {
+				expect(classifyResult).to.be.a('object');
+				expect(classifyResult.search_successful).to.be.true;
+				expect(classifyResult.description).to.equal(i18n.__('search.completed.successfully'));
+				expect(classifyResult.classify_result).to.be.a('object');
+				expect(classifyResult.classify_result.classes).to.have.lengthOf(2);
+				expect(classifyResult.classify_result.classes[0].training_data).to.be.undefined;
+				expect(classifyResult.classify_result.classes[1].training_data).to.be.undefined;
 				done();
 			}).catch((error) => {
 				done(error);
@@ -393,7 +430,7 @@ describe('Test Object Storage Search Engine', function() {
 
 		it('should detect that nlc is currently training', function(done) {
 			engine.nlcManager = {
-				classify: function(searchString) {
+				currentClassifier: function() {
 					return Promise.resolve({
 						classifier_id: 'test-classifier-id',
 						name: 'test-classifier',
@@ -407,10 +444,31 @@ describe('Test Object Storage Search Engine', function() {
 			};
 
 			engine.classify('fishing boat', false).then((classifyResult) => {
-				done('ERROR: should not be able to classify if training.');
-			}).catch((error) => {
-				expect(error).to.eq(i18n.__('unable.to.classify'));
+				expect(classifyResult).to.be.a('object');
+				expect(classifyResult.search_successful).to.be.false;
+				expect(classifyResult.description).to.equal(i18n.__('unable.to.search.still.training'));
+				expect(classifyResult.classify_result).to.be.null;
 				done();
+			}).catch((error) => {
+				done(error);
+			});
+		});
+
+		it('should detect scan and index never ran', function(done) {
+			engine.nlcManager = {
+				currentClassifier: function() {
+					return Promise.reject('No classifiers found');
+				}
+			};
+
+			engine.classify('fishing boat', false).then((classifyResult) => {
+				expect(classifyResult).to.be.a('object');
+				expect(classifyResult.search_successful).to.be.false;
+				expect(classifyResult.description).to.equal(i18n.__('unable.to.search.index.not.started'));
+				expect(classifyResult.classify_result).to.be.null;
+				done();
+			}).catch((error) => {
+				done(error);
 			});
 		});
 	});

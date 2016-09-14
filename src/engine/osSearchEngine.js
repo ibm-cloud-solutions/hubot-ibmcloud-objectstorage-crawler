@@ -255,9 +255,21 @@ SearchEngine.prototype._addTrainingData = function(nlcText, nlcClass) {
 	engine.indexResult.nlc_training_data.push(trainingStatement);
 };
 
-// Uses NLC to classify the provided search string into classes where each class is a path to an object in object storage.
-// If includeTrainingData is true, then the returned NLC classify result will contain training data for each of the returned
-// classes (if available).  Allows for consumers of this method to show what training data (aka tags) resulted in a match.
+/*
+ * Uses NLC to classify the provided search string into classes where each class is a path to an object in object storage.
+ * If includeTrainingData is true, then the returned NLC classify result will contain training data for each of the returned
+ * classes (if available).  Allows for consumers of this method to show what training data (aka tags) resulted in a match.
+ *
+ * Returns a promise, that will either be rejected with an error or resolved with a result object with the following attributes:
+ * {
+ *    search_successful: boolean, // indicates if training started or not.
+ *    description: string // informative description of actions taken during indexing. (translated)
+ *    classify_result: object // Object following the same format as NLC classify result, with optional training data.
+ * }
+ *
+ * NOTE: Just because this promise is resolved doesn't mean classify was successful. You must check search_successful flag.
+ * This helps distinguish between an unexpected error or a known limitation.
+ */
 SearchEngine.prototype.classify = function(searchString, includeTrainingData) {
 	let engine = this;
 
@@ -267,48 +279,73 @@ SearchEngine.prototype.classify = function(searchString, includeTrainingData) {
 	else {
 		return new Promise((resolve, reject) => {
 			try {
-				engine.nlcManager.classify(searchString).then((nlcClassifyResponse) => {
-					logger.debug(`${TAG}: classifier response: ${JSON.stringify(nlcClassifyResponse, null, 2)}`);
+				engine.nlcManager.currentClassifier().then((currentClassifier) => {
+					logger.debug(`${TAG}: current classifier used for search:`, currentClassifier);
 
-					if (!nlcClassifyResponse.classes && nlcClassifyResponse.status) {
-						// If training started, but hasn't completed NLC manager will return the classifier, not the result of classify.
-						logger.warn(`${TAG}: unable to perform search because NLC is not yet available.`);
-						reject(i18n.__('unable.to.classify'));
+					if (currentClassifier.status === 'Training') {
+						resolve({
+							search_successful: false,
+							description: i18n.__('unable.to.search.still.training'),
+							classify_result: null
+						});
 					}
 					else {
-						if (!includeTrainingData) {
-							resolve(nlcClassifyResponse);
-						}
-						else {
-							logger.debug(`${TAG}: attempting to augment NLC classify response with training data.`);
+						engine.nlcManager.classify(searchString).then((nlcClassifyResponse) => {
+							logger.debug(`${TAG}: classifier response: ${JSON.stringify(nlcClassifyResponse, null, 2)}`);
 
-							engine.nlcManager.getClassifierData(nlcClassifyResponse.classifier_id).then((classifierData) => {
-								nlcClassifyResponse.classes.forEach((nlcClass) => {
-									if (classifierData[nlcClass.class_name]) {
-										nlcClass.training_data = classifierData[nlcClass.class_name];
-									}
-									else {
-										logger.warn(`${TAG}: unable to find training data for NLC class '${nlcClass.class_name}'`);
-									}
+							if (!includeTrainingData) {
+								resolve({
+									search_successful: true,
+									description: i18n.__('search.completed.successfully'),
+									classify_result: nlcClassifyResponse
 								});
+							}
+							else {
+								logger.debug(`${TAG}: attempting to augment NLC classify response with training data.`);
 
-								resolve(nlcClassifyResponse);
-							}).catch((err2) => {
-								// log, but still resolve with classifier results.  Better to show search results without tags.
-								logger.warn(`${TAG}: Unable to retrieve training data used to train NLC classifier used for objectstorage search (${nlcClassifyResponse.classifier_id}).  Search result will not include training data.`);
-								resolve(nlcClassifyResponse);
-							});
-						}
+								engine.nlcManager.getClassifierData(nlcClassifyResponse.classifier_id).then((classifierData) => {
+									nlcClassifyResponse.classes.forEach((nlcClass) => {
+										if (classifierData[nlcClass.class_name]) {
+											nlcClass.training_data = classifierData[nlcClass.class_name];
+										}
+										else {
+											logger.warn(`${TAG}: unable to find training data for NLC class '${nlcClass.class_name}'`);
+										}
+									});
+
+									resolve({
+										search_successful: true,
+										description: i18n.__('search.completed.successfully'),
+										classify_result: nlcClassifyResponse
+									});
+								}).catch((err2) => {
+									// log, but still resolve with classifier results.  Better to show search results without tags.
+									logger.warn(`${TAG}: Unable to retrieve training data used to train NLC classifier used for objectstorage search (${nlcClassifyResponse.classifier_id}).  Search result will not include training data.`);
+									resolve({
+										search_successful: true,
+										description: i18n.__('search.completed.successfully'),
+										classify_result: nlcClassifyResponse
+									});
+								});
+							}
+						}).catch((err1) => {
+							logger.error(`${TAG}: error performing NLC classify for search string: ${searchString}`, err1);
+							reject(err1);
+						});
 					}
-				}).catch((err1) => {
-					// Will happen if user has never started training NLC used for objectstorage.
-					logger.error(`${TAG}: error performing NLC classify for search string: ${searchString}`, err1);
-					reject(i18n.__('unable.to.classify'));
+				}).catch((err2) => {
+					// currentClassifier rejects promise when no NLC classifier has been created yet.  We resolve with descriptive error message.
+					logger.error(`${TAG}: attempting to search before scan and index.  error: `, err2);
+					resolve({
+						search_successful: false,
+						description: i18n.__('unable.to.search.index.not.started'),
+						classify_result: null
+					});
 				});
 			}
 			catch (error) {
 				logger.error(`${TAG}: exception while classifying search string: ${searchString}`, error);
-				reject(i18n.__('unexpected.classify.error'));
+				reject(error);
 			}
 		});
 	}
