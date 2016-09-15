@@ -38,7 +38,7 @@ describe('Test env library overrides settings from VCAP_SERVICES', function() {
 			delete require.cache[require.resolve('../src/lib/env')];
 		});
 		it('should pass', function() {
-			process.env.VCAP_SERVICES = '{"Object-Storage": [{"credentials": {"auth_url": "https://authUrlOverride.com","password": "passw0rd","projectId": "theprojectid","region": "dallas","userId": "theuserid"}}],"document_conversion": [{"credentials": {"password": "password","url": "https://gateway.watsonplatform.net/document-conversion/api","username": "user"}}],"watson_vision_combined": [{"credentials": {"api_key": "key","url": "https://gateway-a.watsonplatform.net/visual-recognition/api"}}], "alchemy_api": [{"credentials": {"api_key": "somekey"}}]}';
+			process.env.VCAP_SERVICES = '{"Object-Storage": [{"credentials": {"auth_url": "https://authUrlOverride.com","password": "passw0rd","projectId": "theprojectid","region": "dallas","userId": "theuserid"}}],"document_conversion": [{"credentials": {"password": "password","url": "https://gateway.watsonplatform.net/document-conversion/api","username": "user"}}],"watson_vision_combined": [{"credentials": {"api_key": "key","url": "https://gateway-a.watsonplatform.net/visual-recognition/api"}}], "alchemy_api": [{"credentials": {"apikey": "somekey"}}]}';
 			const settings = require('../src/lib/env');
 			expect(validateAllKeysSet(settings)).to.be.true;
 			/* eslint-disable */
