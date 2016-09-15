@@ -330,6 +330,98 @@ describe('Test Object Storage Search Engine', function() {
 		});
 	});
 
+	context('search engine should call training complete callback', function() {
+		let engine;
+
+		beforeEach(function() {
+			engine = new SearchEngine();
+			expect(engine.initializedSuccessfully()).to.be.true;
+
+			let tagGenerators = [];
+			tagGenerators.push(new FakeTagGenerator());
+			engine.tagGenerators = tagGenerators;
+
+			// mock related NLC manager output to produce desired scan result when comparing NLC to objectstorage
+			engine.nlcManager = {
+				classifierList: function(searchString) {
+					return Promise.resolve([]);
+				},
+
+				getClassifierData: function(classifierId) {
+					// our objectstorage container detail files (in resource folder) have 6 objects.
+					// when compared against this classifier data we expect 4 additions, 1 deletion, 2 unchanged
+					let classfierData = {};
+					classfierData['/container1/Image1.jpg'] = ['fish', 'boat']; // in objectstorage (consider 'unchanged')
+					classfierData['/container1/Image2.jpg'] = ['nfl', 'football', 'sport']; // in objectstorage (consider 'unchanged')
+					classfierData['/old_container/old_object.jpg'] = ['nfl', 'football', 'sport']; // not in objectstorage (considered 'deletion')
+					return Promise.resolve(classfierData);
+				},
+
+				train: function() {
+					return Promise.resolve({
+						classifier_id: 'test-classifier-id-training',
+						name: 'test-classifier-training',
+						language: 'en',
+						created: '2016-09-02T18:30:02.148Z',
+						url: settings.nlc_url + '/v1/classifiers/test-classifier-id-newer',
+						status: 'Training',
+						status_description: 'The classifier instance is now available and is ready to take classifier requests.'
+					});
+				},
+
+				monitorTraining: function(classifier_id) {
+					return Promise.resolve({});
+				}
+			};
+		});
+
+		it('should invoke callback when training completes', function(done) {
+			engine.scan().then((scanResult) => {
+				expect(scanResult.scan_completed).to.be.true;
+			}).then(() => {
+				let trainingComplete = function(passedContext, passedError) {
+					expect(passedContext).to.be.a('object');
+					expect(passedError).to.be.undefined;
+					done();
+				};
+				let trainingCompleteContext = {
+					attribute1: 'value1'
+				};
+
+				return engine.index(trainingComplete, trainingCompleteContext);
+			}).then((indexResult) => {
+				expect(indexResult.training_started).to.be.true;
+			}).catch((error) => {
+				done(error);
+			});
+		});
+
+		it('should invoke callback with error if training fails', function(done) {
+			engine.nlcManager.monitorTraining = function(classifier_id) {
+				return Promise.reject('test forced error for training monitor failure');
+			};
+
+			engine.scan().then((scanResult) => {
+				expect(scanResult.scan_completed).to.be.true;
+			}).then(() => {
+				let trainingComplete = function(passedContext, passedError) {
+					expect(passedContext).to.be.a('object');
+					expect(passedError).to.be.a('string');
+					done();
+				};
+				let trainingCompleteContext = {
+					attribute1: 'value1'
+				};
+
+				return engine.index(trainingComplete, trainingCompleteContext);
+			}).then((indexResult) => {
+				expect(indexResult.training_started).to.be.true;
+			}).catch((error) => {
+				done(error);
+			});
+		});
+	});
+
 	context('search engine classify tests', function() {
 		let engine;
 

@@ -200,7 +200,7 @@ SearchEngine.prototype._getTrainingData = function() {
 
 // Starts the process of training NLC.  Sets indexResult training flag according and resolves the
 // promise immediately after training starts.  Rejects the promise if training couldn't start.
-SearchEngine.prototype._startTrainingNLC = function() {
+SearchEngine.prototype._startTrainingNLC = function(trainingCompleteCallback, trainingCompleteCallbackContext) {
 	let engine = this;
 
 	// @TODO ensure we have enough training data.  If not fail and set indexResult description accordingly.
@@ -226,8 +226,16 @@ SearchEngine.prototype._startTrainingNLC = function() {
 						engine.nlcManager.monitorTraining(classifier.classifier_id).then((classifier) => {
 							logger.info(`${TAG}: NLC training has completed for object storage classifier.`);
 							logger.debug(classifier);
+
+							if (typeof trainingCompleteCallback === 'function') {
+								trainingCompleteCallback(trainingCompleteCallbackContext);
+							}
 						}).catch((err1) => {
 							logger.error(`${TAG}: Error while monitoring training of objectstorage classifier (${classifier.classifier_id}): `, err1);
+
+							if (typeof trainingCompleteCallback === 'function') {
+								trainingCompleteCallback(trainingCompleteCallbackContext, err1);
+							}
 						});
 
 						resolve();
@@ -745,8 +753,13 @@ SearchEngine.prototype.scan = function() {
  *
  * NOTE: Just because this promise is resolved doesn't mean training has started.  You must check training_started flag.
  * This helps distinguish between an unexpected error or a known limitation.
+ *
+ * Optionally, you can provide a callback function and callback context object, that will be invoked when training is complete.
+ * The callback will be called with context as first parameter and optional an error in case an error happens.  This callback
+ * will only be called if the original promised returned by this method set training_started to true.
+ *
  */
-SearchEngine.prototype.index = function() {
+SearchEngine.prototype.index = function(trainingCompleteCallback, trainingCompleteCallbackContext) {
 	logger.info(`${TAG}: starting object storage index...`);
 
 	let engine = this;
@@ -824,7 +837,7 @@ SearchEngine.prototype.index = function() {
 							}
 						});
 					}).then(() => {
-						return engine._startTrainingNLC();
+						return engine._startTrainingNLC(trainingCompleteCallback, trainingCompleteCallbackContext);
 					}).then(() => {
 						// Once NLC starts training clear existing scanResult, to force user to rescan before attempting to index again.
 						logger.debug(`${TAG}: NLC has started training, so clear existing scanResult.`);
