@@ -12,15 +12,9 @@ const expect = require('chai').expect;
 // return promises from mocha tests rather than calling done() - http://tobyho.com/2015/12/16/mocha-with-promises/
 describe('Test env library overrides settings from VCAP_SERVICES', function() {
 
-	function validateOnlyDefaultKeysSet(settings) {
-		return settings.log_level === 'info' &&
-			settings.nlc_objectstorage_classifier === 'cloudbot-obj-storage-classifier' &&
-			settings.os_bluemix_region === 'dallas' && !settings.os_auth_url && !settings.os_user_id && !settings.os_password && !settings.os_project_id && !settings.nlc_url && !settings.nlc_username && !settings.nlc_password && !settings.visual_recognition_api_key && !settings.visual_recognition_version_date && !settings.doc_conversion_username && !settings.doc_conversion_password && !settings.doc_conversion_version_date && !settings.alchemy_api_key;
-	};
-
 	function validateAllKeysSet(settings) {
 		return settings.log_level === 'info' &&
-			settings.os_auth_url === "https://authUrlOverride.com" &&
+			settings.os_auth_url === 'https://authUrlOverride.com' &&
 			settings.os_user_id === process.env.HUBOT_OBJECT_STORAGE_USER_ID &&
 			settings.os_password === process.env.HUBOT_OBJECT_STORAGE_PASSWORD &&
 			settings.os_project_id === process.env.HUBOT_OBJECT_STORAGE_PROJECT_ID &&
@@ -47,7 +41,9 @@ describe('Test env library overrides settings from VCAP_SERVICES', function() {
 			process.env.VCAP_SERVICES = '{"Object-Storage": [{"credentials": {"auth_url": "https://authUrlOverride.com","password": "passw0rd","projectId": "theprojectid","region": "dallas","userId": "theuserid"}}],"document_conversion": [{"credentials": {"password": "password","url": "https://gateway.watsonplatform.net/document-conversion/api","username": "user"}}],"watson_vision_combined": [{"credentials": {"api_key": "key","url": "https://gateway-a.watsonplatform.net/visual-recognition/api"}}]}';
 			const settings = require('../src/lib/env');
 			expect(validateAllKeysSet(settings)).to.be.true;
-			delete process.env["VCAP_SERVICES"];
+			/* eslint-disable */
+			delete process.env['VCAP_SERVICES'];
+			/* eslint-enable */
 		});
 	});
 });

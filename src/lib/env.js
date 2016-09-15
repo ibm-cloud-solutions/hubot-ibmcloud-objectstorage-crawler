@@ -33,8 +33,8 @@ let settings = {
 
 // services bound to application, overrides any other settings.
 if (process.env.VCAP_SERVICES) {
-	if (JSON.parse(process.env.VCAP_SERVICES)["Object-Storage"]) {
-		let credentials = JSON.parse(process.env.VCAP_SERVICES)["Object-Storage"][0].credentials;
+	if (JSON.parse(process.env.VCAP_SERVICES)['Object-Storage']) {
+		let credentials = JSON.parse(process.env.VCAP_SERVICES)['Object-Storage'][0].credentials;
 		settings.os_auth_url = credentials.auth_url;
 		settings.os_user_id = credentials.userId;
 		settings.os_password = credentials.password;
