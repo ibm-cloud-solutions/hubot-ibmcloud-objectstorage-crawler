@@ -50,13 +50,15 @@ if (process.env.VCAP_SERVICES) {
 	if (JSON.parse(process.env.VCAP_SERVICES).watson_vision_combined) {
 		let credentials = JSON.parse(process.env.VCAP_SERVICES).watson_vision_combined[0].credentials;
 		settings.visual_recognition_api_key = credentials.api_key;
-
 	}
 	if (JSON.parse(process.env.VCAP_SERVICES).document_conversion) {
 		let credentials = JSON.parse(process.env.VCAP_SERVICES).document_conversion[0].credentials;
 		settings.doc_conversion_username = credentials.username;
 		settings.doc_password = credentials.password;
-		settings.doc_conversion_username = credentials.username;
+	}
+	if (JSON.parse(process.env.VCAP_SERVICES).alchemy_api) {
+		let credentials = JSON.parse(process.env.VCAP_SERVICES).alchemy_api[0].credentials;
+		settings.alchemy_api_key = credentials.apikey;
 	}
 }
 
