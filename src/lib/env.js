@@ -6,7 +6,7 @@
  */
 'use strict';
 
-const settings = {
+let settings = {
 	log_level: process.env.HUBOT_LOG_LEVEL || process.env.OBJECTSTORAGE_LOG_LEVEL || 'info',
 
 	os_auth_url: process.env.HUBOT_OBJECT_STORAGE_AUTH_URL,
@@ -31,6 +31,34 @@ const settings = {
 	alchemy_api_key: process.env.HUBOT_ALCHEMY_API_KEY
 };
 
+// services bound to application, overrides any other settings.
+if (process.env.VCAP_SERVICES) {
+	if (JSON.parse(process.env.VCAP_SERVICES)["Object-Storage"]) {
+		let credentials = JSON.parse(process.env.VCAP_SERVICES)["Object-Storage"][0].credentials;
+		settings.os_auth_url = credentials.auth_url;
+		settings.os_user_id = credentials.userId;
+		settings.os_password = credentials.password;
+		settings.os_project_id = credentials.projectId;
+		settings.os_bluemix_region = credentials.region;
+	}
+	if (JSON.parse(process.env.VCAP_SERVICES).natural_language_classifier) {
+		let credentials = JSON.parse(process.env.VCAP_SERVICES).natural_language_classifier[0].credentials;
+		settings.nlc_url = credentials.url;
+		settings.nlc_username = credentials.username;
+		settings.nlc_password = credentials.password;
+	}
+	if (JSON.parse(process.env.VCAP_SERVICES).watson_vision_combined) {
+		let credentials = JSON.parse(process.env.VCAP_SERVICES).watson_vision_combined[0].credentials;
+		settings.visual_recognition_api_key = credentials.api_key;
+
+	}
+	if (JSON.parse(process.env.VCAP_SERVICES).document_conversion) {
+		let credentials = JSON.parse(process.env.VCAP_SERVICES).document_conversion[0].credentials;
+		settings.doc_conversion_username = credentials.username;
+		settings.doc_password = credentials.password;
+		settings.doc_conversion_username = credentials.username;
+	}
+}
 
 // gracefully output message and exit if any required config is undefined
 if (!settings.os_auth_url) {
